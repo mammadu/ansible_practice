@@ -1,0 +1,25 @@
+FROM ubuntu:22.04
+
+# used to choose the default answers i.e. avoids prompting you yes or no
+ARG DEBIAN_FRONTEND=noninteractive
+
+# install required packages for ansible
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y \
+    less \
+    software-properties-common \
+    python3 \
+    python3-pip \
+    openssh-server && \
+    apt-get clean
+
+# Create a non-root user for better security
+RUN useradd -m -s /bin/bash ansible && \
+usermod -aG sudo ansible
+
+# Set the working directory
+WORKDIR /home/ansible
+
+# Switch to the ansible user
+USER ansible

@@ -9,13 +9,11 @@ services:
     
   managed1:
     build: managed_Dockerfile
-    image: ubuntu:latest
     networks:
       - ansible_net
       
   managed2:
     build: managed_Dockerfile
-    image: ubuntu:latest
     networks:
       - ansible_net
 

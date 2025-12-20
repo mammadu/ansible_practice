@@ -10,14 +10,15 @@ RUN apt-get update && \
     less \
     software-properties-common \
     python3 \
-    python3-pip && \
+    python3-pip \
+    openssh-client && \
     apt-get clean
 
 # Create a non-root user for better security
 RUN useradd -m -s /bin/bash ansible && \
 usermod -aG sudo ansible
 
-# Set the working directory
+# Set the working directory1
 WORKDIR /home/ansible
 
 # Switch to the ansible user
@@ -27,5 +28,8 @@ USER ansible
 ENV PATH="/home/ansible/.local/bin:${PATH}"
 
 RUN python3 -m pip install --user ansible
+
+# create ssh keys automatically (non-interactive)
+RUN ssh-keygen -t ed25519 -C "control node" -f /home/ansible/.ssh/id_ed25519 -N ""
 
 CMD ["/bin/bash"]

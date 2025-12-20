@@ -11,15 +11,29 @@ RUN apt-get update && \
     software-properties-common \
     python3 \
     python3-pip \
-    openssh-server && \
+    openssh-server \
+    sudo && \
     apt-get clean
+
+# Configure SSH server
+RUN mkdir /var/run/sshd && \
+    echo 'PubkeyAuthentication yes' >> /etc/ssh/sshd_config
 
 # Create a non-root user for better security
 RUN useradd -m -s /bin/bash ansible && \
-usermod -aG sudo ansible
+    echo 'ansible:ansible' | chpasswd && \
+    usermod -aG sudo ansible
+
+# Create SSH directory for ansible user
+RUN mkdir -p /home/ansible/.ssh && \
+    chmod 700 /home/ansible/.ssh && \
+    chown ansible:ansible /home/ansible/.ssh
 
 # Set the working directory
 WORKDIR /home/ansible
 
-# Switch to the ansible user
-USER ansible
+# Expose SSH port
+EXPOSE 22
+
+# Start SSH daemon (must run as root)
+CMD ["/usr/sbin/sshd", "-D"]

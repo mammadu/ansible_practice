@@ -1,0 +1,24 @@
+version: '3.8'
+services:
+  control:
+    build: control_Dockerfile
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # Docker access
+    networks:
+      - ansible_net
+    
+  managed1:
+    build: managed_Dockerfile
+    image: ubuntu:latest
+    networks:
+      - ansible_net
+      
+  managed2:
+    build: managed_Dockerfile
+    image: ubuntu:latest
+    networks:
+      - ansible_net
+
+networks:
+  ansible_net:
+    driver: bridge

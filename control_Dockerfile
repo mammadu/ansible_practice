@@ -11,7 +11,8 @@ RUN apt-get update && \
     software-properties-common \
     python3 \
     python3-pip \
-    openssh-client && \
+    openssh-client \
+    iputils-ping && \
     apt-get clean
 
 # Create a non-root user for better security
@@ -20,6 +21,9 @@ usermod -aG sudo ansible
 
 # Set the working directory1
 WORKDIR /home/ansible
+
+# copy inventory file
+COPY inventory.yaml /home/ansible/
 
 # Switch to the ansible user
 USER ansible

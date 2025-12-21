@@ -1,18 +1,21 @@
 services:
   control:
-    build: control_Dockerfile
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock  # Docker access
+    build:
+      dockerfile: ./control_Dockerfile
+    tty: true          # Allocate a pseudo-TTY
+    stdin_open: true   # Keep STDIN open
     networks:
       - ansible_net
     
   managed1:
-    build: managed_Dockerfile
+    build:
+      dockerfile: ./managed_Dockerfile
     networks:
       - ansible_net
       
   managed2:
-    build: managed_Dockerfile
+    build:
+      dockerfile: ./managed_Dockerfile
     networks:
       - ansible_net
 

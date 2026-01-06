@@ -1,7 +1,9 @@
 # ansible_practice
+
 repo for practicing ansible
 
 ## requirements
+
 - docker and docker-compose
 
 ## installation

@@ -1,21 +1,25 @@
 services:
   control:
     build:
+      context: .
       dockerfile: ./control_Dockerfile
+      args:
+        - USERNAME=${USERNAME_CONTROL}
+        - PASSWORD=${PASSWORD}
+        - SSH_KEY=${SSH_KEY}
     tty: true          # Allocate a pseudo-TTY
     stdin_open: true   # Keep STDIN open
     networks:
       - ansible_net
     
-  managed1:
+  managed:
     build:
+      context: .
       dockerfile: ./managed_Dockerfile
-    networks:
-      - ansible_net
-      
-  managed2:
-    build:
-      dockerfile: ./managed_Dockerfile
+      args:
+        - USERNAME=${USERNAME_MANAGED}
+        - PASSWORD=${PASSWORD}
+        - SSH_KEY=${SSH_KEY}
     networks:
       - ansible_net
 

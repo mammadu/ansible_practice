@@ -2,6 +2,9 @@ FROM ubuntu:22.04
 
 # used to choose the default answers i.e. avoids prompting you yes or no
 ARG DEBIAN_FRONTEND=noninteractive
+ARG USERNAME
+ARG PASSWORD
+ARG SSH_KEY
 
 # install required packages for ansible
 RUN apt-get update && \
@@ -20,20 +23,27 @@ RUN mkdir /var/run/sshd && \
     echo 'PubkeyAuthentication yes' >> /etc/ssh/sshd_config
 
 # Create a non-root user for better security
-RUN useradd -m -s /bin/bash ansible && \
-    echo 'ansible:ansible' | chpasswd && \
-    usermod -aG sudo ansible
+RUN useradd -m -s /bin/bash ${USERNAME} && \
+    echo "${USERNAME}:${PASSWORD}" | chpasswd && \
+    # Add to sudoers for passwordless sudo
+    echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d/${USERNAME}
 
 # Create SSH directory for ansible user
-RUN mkdir -p /home/ansible/.ssh && \
-    chmod 700 /home/ansible/.ssh && \
-    chown ansible:ansible /home/ansible/.ssh
+RUN mkdir -p /home/${USERNAME}/.ssh && \
+    chmod 700 /home/${USERNAME}/.ssh && \
+    chown ${USERNAME}:${USERNAME} /home/${USERNAME}/.ssh && \
+    touch /home/${USERNAME}/.ssh/authorized_keys
+
+# Copy SSH key for ansible user
+COPY ${SSH_KEY}.pub /home/${USERNAME}/.ssh/
+
+RUN cat /home/${USERNAME}/.ssh/${SSH_KEY}.pub >> /home/${USERNAME}/.ssh/authorized_keys
 
 # Set the working directory
-WORKDIR /home/ansible
+WORKDIR /home/${USERNAME}
 
 # Expose SSH port
 EXPOSE 22
 
-# Start SSH daemon (must run as root)
+# Start SSH daemon
 CMD ["/usr/sbin/sshd", "-D"]
